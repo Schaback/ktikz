@@ -386,46 +386,7 @@ void MainWindow::checkForFileChanges(const FileCheckMoment &moment)
 		return;
 
 	m_isModifiedExternally = false;
-	QPointer<QMessageBox> fileChangedWarningMessageBox = new QMessageBox(this);
-	fileChangedWarningMessageBox->setText(tr("The document was modified by another program.\nWhat do you want to do?"));
-	fileChangedWarningMessageBox->setWindowTitle(KtikzApplication::applicationName());
-	fileChangedWarningMessageBox->setIcon(QMessageBox::Warning);
-	QAbstractButton *overwriteButton = fileChangedWarningMessageBox->addButton(tr("&Overwrite"), QMessageBox::AcceptRole);
-	QAbstractButton *reloadButton;
-	switch (moment)
-	{
-		case Saving:
-			reloadButton = fileChangedWarningMessageBox->addButton(tr("&Save under another name"), QMessageBox::AcceptRole);
-			break;
-		case Closing:
-			reloadButton = fileChangedWarningMessageBox->addButton(tr("&Close without saving"), QMessageBox::AcceptRole);
-			break;
-		case FocusIn:
-		default:
-			reloadButton = fileChangedWarningMessageBox->addButton(tr("&Reload file"), QMessageBox::AcceptRole);
-			break;
-	}
-	fileChangedWarningMessageBox->addButton(QMessageBox::Cancel);
-	fileChangedWarningMessageBox->exec();
-	if (fileChangedWarningMessageBox->clickedButton() == overwriteButton)
-		saveUrl(m_currentUrl);
-	else if (fileChangedWarningMessageBox->clickedButton() == reloadButton)
-		switch (moment)
-		{
-			case Saving:
-				saveAs();
-				break;
-			case Closing:
-				// do nothing since the file will be closed anyway
-				break;
-			case FocusIn:
-			default:
-				reload();
-				break;
-		}
-	else // cancel (check again on "Save" or "Close")
-		m_isModifiedExternally = true;
-	delete fileChangedWarningMessageBox;
+	reload();
 }
 
 void MainWindow::saveLastInternalModifiedDateTime()
